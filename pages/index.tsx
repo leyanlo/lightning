@@ -1,19 +1,20 @@
 import Head from 'next/head';
 import Image from 'next/image';
 
+const width = 64;
+const height = 128;
 const grid = [];
-for (let i = 0; i < 128; i++) {
+for (let i = 0; i < height; i++) {
   grid.push([]);
-  for (let j = 0; j < 64; j++) {
+  for (let j = 0; j < width; j++) {
     const top =
       // avoid closed cells
-      +(
-        !grid[i - 1]?.[j][0] ||
+      (!grid[i - 1]?.[j][0] ||
         !grid[i - 1]?.[j][3] ||
-        !grid[i - 1]?.[j + 1]?.[3]
-      ) && Math.round(Math.random());
-    const left = Math.round(Math.random());
-    grid[i].push([top, 0, 0, left]);
+        !grid[i - 1]?.[j + 1]?.[3]) &&
+      Math.random() < width / (width + height);
+    const left = Math.random() < height / (width + height);
+    grid[i].push([top, false, false, left]);
   }
 }
 
