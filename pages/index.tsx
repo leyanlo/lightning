@@ -10,12 +10,12 @@ for (let i = 0; i < height; i++) {
   for (let j = 0; j < width; j++) {
     const top =
       // avoid closed cells
-      (!grid[i - 1]?.[j][0] ||
-        !grid[i - 1]?.[j][3] ||
-        !grid[i - 1]?.[j + 1]?.[3]) &&
+      (!grid[i - 1]?.[j].top ||
+        !grid[i - 1]?.[j].left ||
+        !grid[i - 1]?.[j + 1]?.left) &&
       Math.random() < pTop;
     const left = Math.random() < 1 - pTop;
-    grid[i].push([top, false, false, left]);
+    grid[i].push({ top, left });
   }
 }
 
@@ -33,7 +33,7 @@ export const Home = (): JSX.Element => (
             {row.map((cell, j) => (
               <td
                 key={j}
-                className={[`cell`, cell[0] && '-top', cell[3] && '-left']
+                className={[`cell`, cell.top && '-top', cell.left && '-left']
                   .filter(Boolean)
                   .join(' ')}
               />
