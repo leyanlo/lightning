@@ -50,7 +50,7 @@ export const Home = (): JSX.Element => (
         rel="noopener noreferrer"
       >
         <Image
-          src="/GitHub-Mark-Light-32px.png"
+          src="/GitHub-Mark-Light-64px.png"
           alt="GitHub Logo"
           height="32"
           width="32"
