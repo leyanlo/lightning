@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 const width = 64;
 const height = 128;
+const pTop = Math.sqrt(width) / (Math.sqrt(width) + Math.sqrt(height));
 const grid = [];
 for (let i = 0; i < height; i++) {
   grid.push([]);
@@ -12,8 +13,8 @@ for (let i = 0; i < height; i++) {
       (!grid[i - 1]?.[j][0] ||
         !grid[i - 1]?.[j][3] ||
         !grid[i - 1]?.[j + 1]?.[3]) &&
-      Math.random() < width / (width + height);
-    const left = Math.random() < height / (width + height);
+      Math.random() < pTop;
+    const left = Math.random() < 1 - pTop;
     grid[i].push([top, false, false, left]);
   }
 }
