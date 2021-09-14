@@ -6,25 +6,25 @@ const height = 128;
 const pTop = Math.sqrt(width) / (Math.sqrt(width) + Math.sqrt(height));
 const start = [0, ~~(width / 2)];
 
-function createGrid() {
-  const grid = [];
+function createMaze() {
+  const maze = [];
   for (let i = 0; i < height; i++) {
-    grid.push([]);
+    maze.push([]);
     for (let j = 0; j < width; j++) {
       const top =
         // avoid closed cells
-        (!grid[i - 1]?.[j].top ||
-          !grid[i - 1]?.[j].left ||
-          !grid[i - 1]?.[j + 1]?.left) &&
+        (!maze[i - 1]?.[j].top ||
+          !maze[i - 1]?.[j].left ||
+          !maze[i - 1]?.[j + 1]?.left) &&
         Math.random() < pTop;
       const left = Math.random() < 1 - pTop;
-      grid[i].push({ top, left });
+      maze[i].push({ top, left });
     }
   }
-  return grid;
+  return maze;
 }
 
-function findStrike(grid) {
+function findStrike(maze) {
   const queue = [start];
   while (queue.length) {
     const [r, c] = queue.shift();
@@ -32,20 +32,20 @@ function findStrike(grid) {
     if (r === height - 1) {
       return [r, c];
     }
-    if (grid[r + 1]?.[c] && !grid[r + 1][c].top && !grid[r + 1][c].next) {
-      grid[r + 1][c].next = [r, c];
+    if (maze[r + 1]?.[c] && !maze[r + 1][c].top && !maze[r + 1][c].next) {
+      maze[r + 1][c].next = [r, c];
       queue.push([r + 1, c]);
     }
-    if (grid[r][c + 1] && !grid[r][c + 1].left && !grid[r][c + 1].next) {
-      grid[r][c + 1].next = [r, c];
+    if (maze[r][c + 1] && !maze[r][c + 1].left && !maze[r][c + 1].next) {
+      maze[r][c + 1].next = [r, c];
       queue.push([r, c + 1]);
     }
-    if (grid[r - 1]?.[c] && !grid[r][c].top && !grid[r - 1][c].next) {
-      grid[r - 1][c].next = [r, c];
+    if (maze[r - 1]?.[c] && !maze[r][c].top && !maze[r - 1][c].next) {
+      maze[r - 1][c].next = [r, c];
       queue.push([r - 1, c]);
     }
-    if (grid[r][c - 1] && !grid[r][c].left && !grid[r][c - 1].next) {
-      grid[r][c - 1].next = [r, c];
+    if (maze[r][c - 1] && !maze[r][c].left && !maze[r][c - 1].next) {
+      maze[r][c - 1].next = [r, c];
       queue.push([r, c - 1]);
     }
   }
@@ -54,11 +54,11 @@ function findStrike(grid) {
 }
 
 export const Home = (): JSX.Element => {
-  let grid = createGrid();
-  let strike = findStrike(grid);
+  let maze = createMaze();
+  let strike = findStrike(maze);
   while (!strike) {
-    grid = createGrid();
-    strike = findStrike(grid);
+    maze = createMaze();
+    strike = findStrike(maze);
   }
   return (
     <div className="container">
@@ -68,9 +68,9 @@ export const Home = (): JSX.Element => {
       </Head>
 
       <main>
-        <table className="grid">
+        <table className="maze">
           <tbody>
-            {grid.map((row, i) => (
+            {maze.map((row, i) => (
               <tr key={i}>
                 {row.map((cell, j) => (
                   <td
@@ -127,7 +127,7 @@ export const Home = (): JSX.Element => {
           align-items: center;
         }
 
-        .grid {
+        .maze {
           border-collapse: collapse;
         }
 
