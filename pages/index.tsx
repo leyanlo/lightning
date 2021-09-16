@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import * as React from 'react';
+import { useInterval } from 'react-use';
 
 const width = 64;
 const height = 128;
@@ -166,9 +167,9 @@ function* flashGenerator(
 }
 
 // Infinite loop generator for the path, strike, and flash.
-// noinspection JSUnusedLocalSymbols
 function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
   while (true) {
+    yield Kind.Start;
     let strike;
     for (strike of pathGenerator(maze)) {
       yield Kind.Path;
@@ -198,12 +199,12 @@ function createMaze(): Cell[][] {
 }
 
 export const Home = (): JSX.Element => {
-  const maze = React.useMemo(() => {
-    const m = createMaze();
-    for (const _ of pathGenerator(m)) {
-    }
-    return m;
-  }, []);
+  const maze = React.useMemo(() => createMaze(), []);
+  const gen = React.useMemo(() => lightningGenerator(maze), []);
+  const [, setState] = React.useState({ kind: Kind.Start });
+
+  useInterval(() => setState({ kind: gen.next().value }), 100);
+
   return (
     <div className="container">
       <Head>
