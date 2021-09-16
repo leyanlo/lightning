@@ -241,6 +241,13 @@ export const Home = (): JSX.Element => {
                     ]
                       .filter(Boolean)
                       .join(' ')}
+                    {...(cell.kind === Kind.Path
+                      ? {
+                          style: {
+                            '--weight': cell.weight.toFixed(2),
+                          },
+                        }
+                      : {})}
                   />
                 ))}
               </tr>
@@ -333,6 +340,7 @@ export const Home = (): JSX.Element => {
 
         .cell.-path {
           animation: path linear 400ms;
+          opacity: var(--weight, 1);
         }
 
         .cell.-flash {
