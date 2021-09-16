@@ -209,7 +209,7 @@ export const Home = (): JSX.Element => {
       [Kind.Start]: 200,
       [Kind.Path]: 20,
       [Kind.Strike]: 0,
-      [Kind.Flash]: 0,
+      [Kind.Flash]: 200,
     }[state.kind]
   );
 
@@ -232,8 +232,12 @@ export const Home = (): JSX.Element => {
                       `cell`,
                       cell.walls.top && '-top',
                       cell.walls.left && '-left',
-                      cell.kind === Kind.Start && '-start',
-                      cell.kind === Kind.Path && '-path',
+                      {
+                        [Kind.Start]: '-start',
+                        [Kind.Path]: '-path',
+                        [Kind.Strike]: '-strike',
+                        [Kind.Flash]: '-flash',
+                      }[cell.kind],
                     ]
                       .filter(Boolean)
                       .join(' ')}
@@ -261,6 +265,30 @@ export const Home = (): JSX.Element => {
       </footer>
 
       <style jsx>{`
+        @keyframes path {
+          0% {
+            background: #ffd;
+          }
+          100% {
+            background: transparent;
+          }
+        }
+
+        @keyframes flash {
+          0% {
+            opacity: 1;
+          }
+          33% {
+            opacity: 0;
+          }
+          66% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -298,12 +326,18 @@ export const Home = (): JSX.Element => {
           border-left: 1px solid white;
         }
 
-        .cell.-start {
+        .cell.-start,
+        .cell.-strike {
           background: #ffd;
         }
 
         .cell.-path {
+          animation: path linear 400ms;
+        }
+
+        .cell.-flash {
           background: #ffd;
+          animation: flash linear 200ms;
         }
 
         footer {
