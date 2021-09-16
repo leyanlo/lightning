@@ -286,19 +286,16 @@ export const Home = (): JSX.Element => {
         }
 
         .cell {
-          width: 10px;
-          height: 10px;
-          border-width: 0;
-          border-style: solid;
-          border-color: white;
+          width: 5px;
+          height: 5px;
         }
 
         .cell.-top {
-          border-top-width: 1px;
+          border-top: 1px solid white;
         }
 
         .cell.-left {
-          border-left-width: 1px;
+          border-left: 1px solid white;
         }
 
         .cell.-start {
