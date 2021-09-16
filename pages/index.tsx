@@ -201,9 +201,17 @@ function createMaze(): Cell[][] {
 export const Home = (): JSX.Element => {
   const maze = React.useMemo(() => createMaze(), []);
   const gen = React.useMemo(() => lightningGenerator(maze), []);
-  const [, setState] = React.useState({ kind: Kind.Start });
+  const [state, setState] = React.useState({ kind: Kind.Start });
 
-  useInterval(() => setState({ kind: gen.next().value }), 100);
+  useInterval(
+    () => setState({ kind: gen.next().value }),
+    {
+      [Kind.Start]: 200,
+      [Kind.Path]: 20,
+      [Kind.Strike]: 0,
+      [Kind.Flash]: 0,
+    }[state.kind]
+  );
 
   return (
     <div className="container">
