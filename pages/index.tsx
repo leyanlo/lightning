@@ -157,8 +157,7 @@ function* flashGenerator(
   while (currCell.kind === Kind.Strike) {
     maze[curr[0]][curr[1]] = {
       walls: currCell.walls,
-      kind: Kind.Strike,
-      next: currCell.next,
+      kind: Kind.Flash,
     };
     curr = currCell.next;
     currCell = maze[curr[0]][curr[1]];
