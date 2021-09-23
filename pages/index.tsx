@@ -339,6 +339,14 @@ export const Home = (): JSX.Element => {
           height: 5px;
           position: relative;
         }
+
+        @media screen and (min-width: 600px) {
+          .wall {
+            width: 8px;
+            height: 8px;
+          }
+        }
+
         .wall.-top {
           border-top: 1px solid white;
         }
