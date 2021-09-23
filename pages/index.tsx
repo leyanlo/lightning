@@ -135,15 +135,22 @@ function* strikeGenerator(
 ): Generator<[number, number]> {
   let curr = strike;
   let currCell = maze[curr[0]][curr[1]];
+  let i = 0;
   while (currCell.kind === Kind.Path) {
     maze[curr[0]][curr[1]] = {
       walls: currCell.walls,
       kind: Kind.Strike,
       next: currCell.next,
     };
-    yield curr;
+    i++;
+    if (i % 10 === 0) {
+      yield curr;
+    }
     curr = currCell.next;
     currCell = maze[curr[0]][curr[1]];
+  }
+  if (i % 10 !== 0) {
+    yield curr;
   }
 }
 
