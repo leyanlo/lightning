@@ -235,26 +235,34 @@ export const Home = (): JSX.Element => {
                   <td
                     key={j}
                     className={[
-                      `cell`,
+                      `wall`,
                       cell.walls.top && '-top',
                       cell.walls.left && '-left',
-                      {
-                        [Kind.Start]: '-start',
-                        [Kind.Path]: '-path',
-                        [Kind.Strike]: '-strike',
-                        [Kind.Flash]: '-flash',
-                      }[cell.kind],
                     ]
                       .filter(Boolean)
                       .join(' ')}
-                    {...(cell.kind === Kind.Path
-                      ? {
-                          style: {
-                            '--weight': cell.weight.toFixed(2),
-                          },
-                        }
-                      : {})}
-                  />
+                  >
+                    <div
+                      className={[
+                        `cell`,
+                        {
+                          [Kind.Start]: '-start',
+                          [Kind.Path]: '-path',
+                          [Kind.Strike]: '-strike',
+                          [Kind.Flash]: '-flash',
+                        }[cell.kind],
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      {...(cell.kind === Kind.Path
+                        ? {
+                            style: {
+                              '--weight': cell.weight.toFixed(2),
+                            },
+                          }
+                        : {})}
+                    />
+                  </td>
                 ))}
               </tr>
             ))}
@@ -326,17 +334,25 @@ export const Home = (): JSX.Element => {
           border-collapse: collapse;
         }
 
-        .cell {
+        .wall {
           width: 5px;
           height: 5px;
+          position: relative;
         }
-
-        .cell.-top {
+        .wall.-top {
           border-top: 1px solid white;
         }
 
-        .cell.-left {
+        .wall.-left {
           border-left: 1px solid white;
+        }
+
+        .cell {
+          position: absolute;
+          top: -1px;
+          left: -1px;
+          width: calc(100% + 2px);
+          height: calc(100% + 2px);
         }
 
         .cell.-start,
