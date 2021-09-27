@@ -205,7 +205,7 @@ function createMaze(): Cell[][] {
 }
 
 export const Home = (): JSX.Element => {
-  const maze = React.useMemo(() => createMaze(), []);
+  const { current: maze } = React.useRef(createMaze());
   const gen = React.useMemo(() => lightningGenerator(maze), []);
   const [state, setState] = React.useState({ kind: Kind.Start });
 
