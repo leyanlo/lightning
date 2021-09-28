@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Image from 'next/image';
 import * as React from 'react';
@@ -421,4 +422,6 @@ export const Home = (): JSX.Element => {
   );
 };
 
-export default Home;
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false,
+});
