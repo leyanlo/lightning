@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Image from 'next/image';
 import * as React from 'react';
-import { useInterval } from 'react-use';
 
 const width = 64;
 const height = 128;
@@ -207,18 +206,28 @@ function createMaze(): Cell[][] {
 
 export const Home = (): JSX.Element => {
   const { current: maze } = React.useRef(createMaze());
-  const gen = React.useMemo(() => lightningGenerator(maze), []);
+  const gen = React.useMemo(() => lightningGenerator(maze), [maze]);
   const [state, setState] = React.useState({ kind: Kind.Start });
 
-  useInterval(
-    () => setState({ kind: gen.next().value }),
-    {
-      [Kind.Start]: 200,
-      [Kind.Path]: 20,
-      [Kind.Strike]: 0,
-      [Kind.Flash]: 200,
-    }[state.kind]
-  );
+  const tick = React.useCallback(() => {
+    const kind = gen.next().value;
+    setTimeout(
+      () => {
+        setState({ kind });
+        tick();
+      },
+      {
+        [Kind.Start]: 200,
+        [Kind.Path]: 20,
+        [Kind.Strike]: 0,
+        [Kind.Flash]: 200,
+      }[kind]
+    );
+  }, [gen]);
+
+  React.useEffect(() => {
+    tick();
+  }, [tick]);
 
   return (
     <div className="container">
