@@ -23,31 +23,106 @@ type Walls = {
   left: boolean;
 };
 
-type Cell = {
-  walls: Walls;
-} & (
-  | {
-      kind: Kind.Empty;
-    }
-  | {
-      kind: Kind.Start;
-    }
-  | {
-      kind: Kind.Path;
-      // how bright the cell is, from 0.00 to 1.00, at most 25% of the height
-      weight: string;
-      // coordinates of the next cell towards the start
-      next: [number, number];
-    }
-  | {
-      kind: Kind.Strike;
-      // coordinates of the next cell towards the start
-      next: [number, number];
-    }
-  | {
-      kind: Kind.Flash;
-    }
-);
+const kindToClassModifier: { [Property in Kind]: string } = {
+  [Kind.Empty]: '-empty',
+  [Kind.Start]: '-start',
+  [Kind.Path]: '-path',
+  [Kind.Strike]: '-strike',
+  [Kind.Flash]: '-flash',
+};
+
+const kindToTimeoutMs: { [Property in Kind]: number } = {
+  [Kind.Empty]: 200,
+  [Kind.Start]: 200,
+  [Kind.Path]: 20,
+  [Kind.Strike]: 0,
+  [Kind.Flash]: 200,
+};
+
+class Cell {
+  private readonly _walls: Walls;
+
+  private _kind: Kind;
+  // coordinates of the next cell towards the start
+  private _next?: [number, number];
+  // how bright the cell is, from 0.00 to 1.00, at most 25% of the height
+  private _weight?: string;
+
+  public wallsClassName: string;
+  public cellClassName: string;
+
+  private _updateWallsClassName() {
+    this.wallsClassName = [
+      `wall`,
+      this._walls.top && '-top',
+      this._walls.left && '-left',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  private _updateCellClassName() {
+    this.cellClassName = [`cell`, kindToClassModifier[this._kind]]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  constructor({ walls, kind }) {
+    this._walls = walls;
+    this._kind = kind;
+    this._updateWallsClassName();
+    this._updateCellClassName();
+  }
+
+  public get walls() {
+    return this._walls;
+  }
+
+  public get kind() {
+    return this._kind;
+  }
+
+  public get next() {
+    return this._next;
+  }
+
+  public get weight() {
+    return this._weight;
+  }
+
+  public update(
+    props:
+      | {
+          kind: Kind.Empty;
+        }
+      | {
+          kind: Kind.Start;
+        }
+      | {
+          kind: Kind.Path;
+          // how bright the cell is, from 0.00 to 1.00, at most 25% of the height
+          weight: string;
+          // coordinates of the next cell towards the start
+          next: [number, number];
+        }
+      | {
+          kind: Kind.Strike;
+          // coordinates of the next cell towards the start
+          next: [number, number];
+        }
+      | {
+          kind: Kind.Flash;
+        }
+  ) {
+    this._kind = props.kind;
+    this._weight = props.kind === Kind.Path ? props.weight : undefined;
+    this._next =
+      props.kind === Kind.Path || props.kind === Kind.Strike
+        ? props.next
+        : undefined;
+    this._updateCellClassName();
+  }
+}
 
 // Initialize random maze. Could result in invalid maze with no solution.
 function createRandomMaze(): Cell[][] {
@@ -62,13 +137,15 @@ function createRandomMaze(): Cell[][] {
           !maze[i - 1]?.[j + 1]?.walls.left) &&
         Math.random() < pTop;
       const left = Math.random() < 1 - pTop;
-      maze[i].push({
-        walls: { top, left },
-        kind: Kind.Empty,
-      });
+      maze[i].push(
+        new Cell({
+          walls: { top, left },
+          kind: Kind.Empty,
+        })
+      );
     }
   }
-  maze[start[0]][start[1]].kind = Kind.Start;
+  maze[start[0]][start[1]].update({ kind: Kind.Start });
   return maze;
 }
 
@@ -76,13 +153,10 @@ function createRandomMaze(): Cell[][] {
 function resetMaze(maze: Cell[][]): Cell[][] {
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze[i].length; j++) {
-      maze[i][j] = {
-        walls: maze[i][j].walls,
-        kind: Kind.Empty,
-      };
+      maze[i][j].update({ kind: Kind.Empty });
     }
   }
-  maze[start[0]][start[1]].kind = Kind.Start;
+  maze[start[0]][start[1]].update({ kind: Kind.Start });
   return maze;
 }
 
@@ -114,13 +188,12 @@ function* pathGenerator(maze: Cell[][]): Generator<[number, number]> {
     const nextQueue = [];
     for (const key in nextCells) {
       const [r, c] = key.split(',').map(Number);
-      maze[r][c] = {
-        walls: maze[r][c].walls,
+      maze[r][c].update({
         kind: Kind.Path,
         // 100% at strike, lerp to 0 over a quarter of the height
         weight: Math.max(0, 1 - (4 * (strike[0] - r)) / height).toFixed(2),
         next: nextCells[key],
-      };
+      });
       nextQueue.push([r, c]);
     }
     queue = nextQueue;
@@ -137,11 +210,10 @@ function* strikeGenerator(
   let currCell = maze[curr[0]][curr[1]];
   let i = 0;
   while (currCell.kind === Kind.Path) {
-    maze[curr[0]][curr[1]] = {
-      walls: currCell.walls,
+    maze[curr[0]][curr[1]].update({
       kind: Kind.Strike,
       next: currCell.next,
-    };
+    });
     i++;
     if (i % 10 === 0) {
       yield curr;
@@ -162,11 +234,11 @@ function* flashGenerator(
   let curr = strike;
   let currCell = maze[curr[0]][curr[1]];
   while (currCell.kind === Kind.Strike) {
-    maze[curr[0]][curr[1]] = {
-      walls: currCell.walls,
+    const { next } = currCell;
+    maze[curr[0]][curr[1]].update({
       kind: Kind.Flash,
-    };
-    curr = currCell.next;
+    });
+    curr = next;
     currCell = maze[curr[0]][curr[1]];
   }
   yield curr;
@@ -176,7 +248,7 @@ function* flashGenerator(
 function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
   while (true) {
     yield Kind.Start;
-    let strike;
+    let strike = start;
     for (strike of pathGenerator(maze)) {
       yield Kind.Path;
     }
@@ -207,22 +279,14 @@ function createMaze(): Cell[][] {
 export const Home = (): JSX.Element => {
   const maze = React.useMemo(() => createMaze(), []);
   const gen = React.useMemo(() => lightningGenerator(maze), [maze]);
-  const [state, setState] = React.useState({ kind: Kind.Start });
+  const [, setState] = React.useState({ kind: Kind.Start });
 
   const tick = React.useCallback(() => {
     const kind = gen.next().value;
-    setTimeout(
-      () => {
-        setState({ kind });
-        tick();
-      },
-      {
-        [Kind.Start]: 200,
-        [Kind.Path]: 20,
-        [Kind.Strike]: 0,
-        [Kind.Flash]: 200,
-      }[kind]
-    );
+    setTimeout(() => {
+      setState({ kind });
+      tick();
+    }, kindToTimeoutMs[kind]);
   }, [gen]);
 
   React.useEffect(() => {
@@ -242,31 +306,10 @@ export const Home = (): JSX.Element => {
             {maze.map((row, i) => (
               <tr key={i}>
                 {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    className={[
-                      `wall`,
-                      cell.walls.top && '-top',
-                      cell.walls.left && '-left',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
+                  <td key={j} className={cell.wallsClassName}>
                     <div
-                      className={[
-                        `cell`,
-                        {
-                          [Kind.Start]: '-start',
-                          [Kind.Path]: '-path',
-                          [Kind.Strike]: '-strike',
-                          [Kind.Flash]: '-flash',
-                        }[cell.kind],
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      {...(cell.kind === Kind.Path
-                        ? { style: { '--weight': cell.weight } }
-                        : {})}
+                      className={cell.cellClassName}
+                      style={{ '--weight': cell.weight }}
                     />
                   </td>
                 ))}
