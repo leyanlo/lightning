@@ -34,8 +34,8 @@ type Cell = {
     }
   | {
       kind: Kind.Path;
-      // how bright the cell is, from 0 to 1, at most 25% of the height
-      weight: number;
+      // how bright the cell is, from 0.00 to 1.00, at most 25% of the height
+      weight: string;
       // coordinates of the next cell towards the start
       next: [number, number];
     }
@@ -118,7 +118,7 @@ function* pathGenerator(maze: Cell[][]): Generator<[number, number]> {
         walls: maze[r][c].walls,
         kind: Kind.Path,
         // 100% at strike, lerp to 0 over a quarter of the height
-        weight: Math.max(0, 1 - (4 * (strike[0] - r)) / height),
+        weight: Math.max(0, 1 - (4 * (strike[0] - r)) / height).toFixed(2),
         next: nextCells[key],
       };
       nextQueue.push([r, c]);
@@ -265,11 +265,7 @@ export const Home = (): JSX.Element => {
                         .filter(Boolean)
                         .join(' ')}
                       {...(cell.kind === Kind.Path
-                        ? {
-                            style: {
-                              '--weight': cell.weight.toFixed(2),
-                            },
-                          }
+                        ? { style: { '--weight': cell.weight } }
                         : {})}
                     />
                   </td>
