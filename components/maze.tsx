@@ -207,6 +207,7 @@ function* strikeGenerator(
   let currCell = maze[curr[0]][curr[1]];
   let i = 0;
   while (currCell.kind === Kind.Path) {
+    const { next } = currCell;
     maze[curr[0]][curr[1]].update({
       kind: Kind.Strike,
       next: currCell.next,
@@ -215,7 +216,7 @@ function* strikeGenerator(
     if (i % 10 === 0) {
       yield curr;
     }
-    curr = currCell.next;
+    curr = next;
     currCell = maze[curr[0]][curr[1]];
   }
   if (i % 10 !== 0) {
