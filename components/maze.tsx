@@ -277,19 +277,30 @@ function createMaze(): Cell[][] {
 export function Maze(): JSX.Element {
   const maze = React.useMemo(() => createMaze(), []);
   const gen = React.useMemo(() => lightningGenerator(maze), [maze]);
-  const [, setState] = React.useState({ kind: Kind.Start });
+  const kindRef = React.useRef(Kind.Start);
+  const start = React.useMemo(() => performance.now(), []);
+  const prevTimestampRef = React.useRef(start);
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
-  const tick = React.useCallback(() => {
-    const kind = gen.next().value;
-    setTimeout(() => {
-      setState({ kind });
-      tick();
-    }, kindToTimeoutMs[kind]);
-  }, [gen]);
+  const step = React.useCallback(
+    (timestamp) => {
+      if (
+        timestamp - prevTimestampRef.current >
+        kindToTimeoutMs[kindRef.current]
+      ) {
+        prevTimestampRef.current = timestamp;
+        kindRef.current = gen.next().value;
+        forceUpdate();
+      }
+      requestAnimationFrame(step);
+    },
+    [gen]
+  );
 
+  // start the loop
   React.useEffect(() => {
-    tick();
-  }, [tick]);
+    requestAnimationFrame(step);
+  }, [step]);
 
   return (
     <table className="maze">
