@@ -10,7 +10,6 @@ enum Kind {
   Start,
   Path,
   Strike,
-  Flash,
 }
 
 type Walls = {
@@ -25,7 +24,6 @@ const kindToClassModifier: { [Property in Kind]: string } = {
   [Kind.Start]: '-start',
   [Kind.Path]: '-path',
   [Kind.Strike]: '-strike',
-  [Kind.Flash]: '-flash',
 };
 
 const kindToTimeoutMs: { [Property in Kind]: number } = {
@@ -33,7 +31,6 @@ const kindToTimeoutMs: { [Property in Kind]: number } = {
   [Kind.Start]: 200,
   [Kind.Path]: 20,
   [Kind.Strike]: 0,
-  [Kind.Flash]: 200,
 };
 
 class Cell {
@@ -104,19 +101,11 @@ class Cell {
         }
       | {
           kind: Kind.Strike;
-          // coordinates of the next cell towards the start
-          next: [number, number];
-        }
-      | {
-          kind: Kind.Flash;
         }
   ) {
     this._kind = props.kind;
     this._weight = props.kind === Kind.Path ? props.weight : undefined;
-    this._next =
-      props.kind === Kind.Path || props.kind === Kind.Strike
-        ? props.next
-        : undefined;
+    this._next = props.kind === Kind.Path ? props.next : undefined;
     this._updateCellClassName();
   }
 }
@@ -208,10 +197,7 @@ function* strikeGenerator(
   let i = 0;
   while (currCell.kind === Kind.Path) {
     const { next } = currCell;
-    maze[curr[0]][curr[1]].update({
-      kind: Kind.Strike,
-      next: currCell.next,
-    });
+    maze[curr[0]][curr[1]].update({ kind: Kind.Strike });
     i++;
     if (i % 10 === 0) {
       yield curr;
@@ -224,25 +210,7 @@ function* strikeGenerator(
   }
 }
 
-// Generator for the flash.
-function* flashGenerator(
-  maze: Cell[][],
-  strike: [number, number]
-): Generator<[number, number]> {
-  let curr = strike;
-  let currCell = maze[curr[0]][curr[1]];
-  while (currCell.kind === Kind.Strike) {
-    const { next } = currCell;
-    maze[curr[0]][curr[1]].update({
-      kind: Kind.Flash,
-    });
-    curr = next;
-    currCell = maze[curr[0]][curr[1]];
-  }
-  yield curr;
-}
-
-// Infinite loop generator for the path, strike, and flash.
+// Infinite loop generator for the path and strike.
 function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
   while (true) {
     yield Kind.Start;
@@ -252,9 +220,6 @@ function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
     }
     for (const _ of strikeGenerator(maze, strike)) {
       yield Kind.Strike;
-    }
-    for (const _ of flashGenerator(maze, strike)) {
-      yield Kind.Flash;
     }
     resetMaze(maze);
   }
@@ -329,21 +294,6 @@ export function Maze(): JSX.Element {
           }
         }
 
-        @keyframes flash {
-          0% {
-            opacity: 1;
-          }
-          33% {
-            opacity: 0;
-          }
-          66% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-          }
-        }
-
         .maze {
           border-collapse: collapse;
         }
@@ -385,11 +335,6 @@ export function Maze(): JSX.Element {
         .cell.-path {
           animation: path linear 400ms;
           opacity: var(--weight, 1);
-        }
-
-        .cell.-flash {
-          background: #ffd;
-          animation: flash linear 200ms;
         }
       `}</style>
     </table>
