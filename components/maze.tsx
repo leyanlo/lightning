@@ -10,6 +10,7 @@ enum Kind {
   Start,
   Path,
   Strike,
+  Done,
 }
 
 type Walls = {
@@ -19,18 +20,20 @@ type Walls = {
   left: boolean;
 };
 
-const kindToClassModifier: { [Property in Kind]: string } = {
-  [Kind.Empty]: '-empty',
+const kindToClassModifier: { [Property in Kind]: string | null } = {
+  [Kind.Empty]: null,
   [Kind.Start]: '-start',
   [Kind.Path]: '-path',
   [Kind.Strike]: '-strike',
+  [Kind.Done]: null,
 };
 
-const kindToTimeoutMs: { [Property in Kind]: number } = {
-  [Kind.Empty]: 200,
+const kindToTimeoutMs: { [Property in Kind]: number | null } = {
+  [Kind.Empty]: null,
   [Kind.Start]: 200,
   [Kind.Path]: 20,
-  [Kind.Strike]: 0,
+  [Kind.Strike]: 2,
+  [Kind.Done]: 2000,
 };
 
 class Cell {
@@ -221,6 +224,7 @@ function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
     for (const _ of strikeGenerator(maze, strike)) {
       yield Kind.Strike;
     }
+    yield Kind.Done;
     resetMaze(maze);
   }
 }
