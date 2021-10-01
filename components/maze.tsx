@@ -32,8 +32,8 @@ const kindToTimeoutMs: { [Property in Kind]: number | null } = {
   [Kind.Empty]: null,
   [Kind.Start]: 200,
   [Kind.Path]: 20,
-  [Kind.Strike]: 2,
-  [Kind.Done]: 2000,
+  [Kind.Strike]: 0,
+  [Kind.Done]: 1000,
 };
 
 class Cell {
