@@ -10,7 +10,61 @@ export const Home = (): JSX.Element => {
     <div className="container">
       <Head>
         <title>Lightning</title>
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="application-name" content="Lightning" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Lightning" />
+        <meta name="description" content="Lightning simulator" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#000000" />
+
+        <link rel="apple-touch-icon" href="/icons/icon-128x128.png" />
+
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/icons/icon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/icons/icon-16x16.png"
+        />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+
+        <meta name="twitter:card" content="summary" />
+        <meta
+          name="twitter:url"
+          content="https://leyanlo-lightning.netlify.app/"
+        />
+        <meta name="twitter:title" content="Lightning" />
+        <meta name="twitter:description" content="Lightning simulator" />
+        <meta
+          name="twitter:image"
+          content="https://leyanlo-lightning.netlify.app/icons/icon-128x128.png"
+        />
+        <meta name="twitter:creator" content="@leyanlo" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Lightning" />
+        <meta property="og:description" content="Lightning simulator" />
+        <meta property="og:site_name" content="Lightning" />
+        <meta
+          property="og:url"
+          content="https://leyanlo-lightning.netlify.app"
+        />
+        <meta
+          property="og:image"
+          content="https://leyanlo-lightning.netlify.app/icons/icon-128x128.png"
+        />
+
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+        />
       </Head>
 
       <main>
