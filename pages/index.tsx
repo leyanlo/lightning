@@ -19,7 +19,7 @@ export const Home = (): JSX.Element => {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />
 
-        <link rel="apple-touch-icon" href="/icons/icon-128x128.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
 
         <link
           rel="icon"
@@ -45,7 +45,7 @@ export const Home = (): JSX.Element => {
         <meta name="twitter:description" content="Lightning simulator" />
         <meta
           name="twitter:image"
-          content="https://leyanlo-lightning.netlify.app/icons/icon-128x128.png"
+          content="https://leyanlo-lightning.netlify.app/icons/icon-192x192.png"
         />
         <meta name="twitter:creator" content="@leyanlo" />
         <meta property="og:type" content="website" />
@@ -58,7 +58,7 @@ export const Home = (): JSX.Element => {
         />
         <meta
           property="og:image"
-          content="https://leyanlo-lightning.netlify.app/icons/icon-128x128.png"
+          content="https://leyanlo-lightning.netlify.app/icons/icon-512x512.png"
         />
 
         <meta
