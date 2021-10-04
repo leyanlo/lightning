@@ -2,6 +2,7 @@ import * as React from 'react';
 
 const width = 64;
 const height = 128;
+// Probability of a horizontal wall in the maze. Tends to 1 as maze gets wider, and 0 as maze gets taller.
 const pTop = Math.sqrt(width) / (Math.sqrt(width) + Math.sqrt(height));
 const start: [number, number] = [0, ~~(width / 2)];
 
@@ -229,6 +230,7 @@ function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
   }
 }
 
+// Initialize maze. Will keep trying random mazes until it finds a valid maze.
 function createMaze(): Cell[][] {
   let maze = createRandomMaze();
   let strike;
