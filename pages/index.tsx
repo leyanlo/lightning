@@ -65,6 +65,11 @@ export const Home = (): JSX.Element => {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
+        <script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token":"1e59895a4819422e813cc1c386b2f8f0"}'
+        ></script>
       </Head>
 
       <main>
