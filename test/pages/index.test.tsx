@@ -3,6 +3,11 @@ import React from 'react';
 import { Home } from '../../pages';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('next/head', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 jest.mock('next/dynamic', () => ({
   __esModule: true,
   default: () => {
@@ -13,7 +18,7 @@ jest.mock('next/dynamic', () => ({
 }));
 
 describe('Home page', () => {
-  it('renders the maze and repository link', () => {
+  it('renders the maze, repository link, and canonical URL', () => {
     render(<Home />);
 
     expect(screen.getByTestId('maze')).toBeTruthy();
@@ -23,5 +28,16 @@ describe('Home page', () => {
       'https://github.com/leyanlo/lightning',
     );
     expect(repositoryLink.getAttribute('target')).toBe('_blank');
+
+    expect(
+      document.head
+        .querySelector('link[rel="canonical"]')
+        ?.getAttribute('href'),
+    ).toBe('https://lightning.leyanlo.com/');
+    expect(
+      document.head
+        .querySelector('meta[property="og:url"]')
+        ?.getAttribute('content'),
+    ).toBe('https://lightning.leyanlo.com/');
   });
 });
