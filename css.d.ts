@@ -1,4 +1,4 @@
-import * as CSS from 'csstype';
+import 'csstype';
 
 declare module 'csstype' {
   interface Properties {

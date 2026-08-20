@@ -1,18 +1,43 @@
 import React from 'react';
 
 import { Home } from '../../pages';
-import { fireEvent, render } from '../testUtils';
+import { render, screen } from '@testing-library/react';
+
+jest.mock('next/head', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+jest.mock('next/dynamic', () => ({
+  __esModule: true,
+  default: () => {
+    const MockMaze = () => <div data-testid="maze" />;
+    MockMaze.displayName = 'MockMaze';
+    return MockMaze;
+  },
+}));
 
 describe('Home page', () => {
-  it('matches snapshot', () => {
-    const { asFragment } = render(<Home />, {});
-    expect(asFragment()).toMatchSnapshot();
-  });
+  it('renders the maze, repository link, and canonical URL', () => {
+    render(<Home />);
 
-  it('clicking button triggers alert', () => {
-    const { getByText } = render(<Home />, {});
-    window.alert = jest.fn();
-    fireEvent.click(getByText('Test Button'));
-    expect(window.alert).toHaveBeenCalledWith('With typescript and Jest');
+    expect(screen.getByTestId('maze')).toBeTruthy();
+
+    const repositoryLink = screen.getByRole('link', { name: 'GitHub Logo' });
+    expect(repositoryLink.getAttribute('href')).toBe(
+      'https://github.com/leyanlo/lightning',
+    );
+    expect(repositoryLink.getAttribute('target')).toBe('_blank');
+
+    expect(
+      document.head
+        .querySelector('link[rel="canonical"]')
+        ?.getAttribute('href'),
+    ).toBe('https://lightning.leyanlo.com/');
+    expect(
+      document.head
+        .querySelector('meta[property="og:url"]')
+        ?.getAttribute('content'),
+    ).toBe('https://lightning.leyanlo.com/');
   });
 });

@@ -5,7 +5,7 @@ import * as React from 'react';
 
 const Maze = dynamic(() => import('../components/maze'), { ssr: false });
 
-export const Home = (): JSX.Element => {
+export const Home = (): React.JSX.Element => {
   return (
     <div className="container">
       <Head>
@@ -37,29 +37,25 @@ export const Home = (): JSX.Element => {
         <link rel="shortcut icon" href="/favicon.ico" />
 
         <meta name="twitter:card" content="summary" />
-        <meta
-          name="twitter:url"
-          content="https://leyanlo-lightning.netlify.app/"
-        />
+        <meta name="twitter:url" content="https://lightning.leyanlo.com/" />
         <meta name="twitter:title" content="Lightning" />
         <meta name="twitter:description" content="Lightning simulator" />
         <meta
           name="twitter:image"
-          content="https://leyanlo-lightning.netlify.app/icons/icon-192x192.png"
+          content="https://lightning.leyanlo.com/icons/icon-192x192.png"
         />
         <meta name="twitter:creator" content="@leyanlo" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Lightning" />
         <meta property="og:description" content="Lightning simulator" />
         <meta property="og:site_name" content="Lightning" />
-        <meta
-          property="og:url"
-          content="https://leyanlo-lightning.netlify.app"
-        />
+        <meta property="og:url" content="https://lightning.leyanlo.com/" />
         <meta
           property="og:image"
-          content="https://leyanlo-lightning.netlify.app/icons/icon-512x512.png"
+          content="https://lightning.leyanlo.com/icons/icon-512x512.png"
         />
+
+        <link rel="canonical" href="https://lightning.leyanlo.com/" />
 
         <meta
           name="viewport"
@@ -142,8 +138,17 @@ export const Home = (): JSX.Element => {
         body {
           padding: 0;
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+          font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            Segoe UI,
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            Fira Sans,
+            Droid Sans,
+            Helvetica Neue,
             sans-serif;
         }
 
