@@ -5,7 +5,7 @@ import * as React from 'react';
 
 const Maze = dynamic(() => import('../components/maze'), { ssr: false });
 
-export const Home = (): JSX.Element => {
+export const Home = (): React.JSX.Element => {
   return (
     <div className="container">
       <Head>
@@ -142,8 +142,17 @@ export const Home = (): JSX.Element => {
         body {
           padding: 0;
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+          font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            Segoe UI,
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            Fira Sans,
+            Droid Sans,
+            Helvetica Neue,
             sans-serif;
         }
 

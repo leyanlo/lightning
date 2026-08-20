@@ -12,6 +12,7 @@
 /.next/
 /out/
 /public/sw.js
+/public/swe-worker-*.js
 /public/workbox-*.js
 
 # production
@@ -20,6 +21,7 @@
 # misc
 .DS_Store
 *.pem
+*.tsbuildinfo
 
 # debug
 npm-debug.log*

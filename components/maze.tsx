@@ -105,7 +105,7 @@ class Cell {
         }
       | {
           kind: Kind.Strike;
-        }
+        },
   ) {
     this._kind = props.kind;
     this._weight = props.kind === Kind.Path ? props.weight : undefined;
@@ -131,7 +131,7 @@ function createRandomMaze(): Cell[][] {
         new Cell({
           walls: { top, left },
           kind: Kind.Empty,
-        })
+        }),
       );
     }
   }
@@ -194,7 +194,7 @@ function* pathGenerator(maze: Cell[][]): Generator<[number, number]> {
 // Generator for the strike to the start.
 function* strikeGenerator(
   maze: Cell[][],
-  strike: [number, number]
+  strike: [number, number],
 ): Generator<[number, number]> {
   let curr = strike;
   let currCell = maze[curr[0]][curr[1]];
@@ -222,7 +222,8 @@ function* lightningGenerator(maze: Cell[][]): Generator<Kind> {
     for (strike of pathGenerator(maze)) {
       yield Kind.Path;
     }
-    for (const _ of strikeGenerator(maze, strike)) {
+    for (const position of strikeGenerator(maze, strike)) {
+      void position;
       yield Kind.Strike;
     }
     yield Kind.Done;
@@ -245,33 +246,29 @@ function createMaze(): Cell[][] {
   return resetMaze(maze);
 }
 
-export function Maze(): JSX.Element {
+export function Maze(): React.JSX.Element {
   const maze = React.useMemo(() => createMaze(), []);
   const gen = React.useMemo(() => lightningGenerator(maze), [maze]);
-  const kindRef = React.useRef(Kind.Start);
-  const start = React.useMemo(() => performance.now(), []);
-  const prevTimestampRef = React.useRef(start);
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-
-  const step = React.useCallback(
-    (timestamp) => {
-      if (
-        timestamp - prevTimestampRef.current >
-        kindToTimeoutMs[kindRef.current]
-      ) {
-        prevTimestampRef.current = timestamp;
-        kindRef.current = gen.next().value;
-        forceUpdate();
-      }
-      requestAnimationFrame(step);
-    },
-    [gen]
-  );
 
   // start the loop
   React.useEffect(() => {
-    requestAnimationFrame(step);
-  }, [step]);
+    let currentKind = Kind.Start;
+    let previousTimestamp = performance.now();
+    let frame: number;
+
+    function step(timestamp: number) {
+      if (timestamp - previousTimestamp > (kindToTimeoutMs[currentKind] ?? 0)) {
+        previousTimestamp = timestamp;
+        currentKind = gen.next().value ?? Kind.Done;
+        forceUpdate();
+      }
+      frame = requestAnimationFrame(step);
+    }
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [gen]);
 
   return (
     <table className="maze">
